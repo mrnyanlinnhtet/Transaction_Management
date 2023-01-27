@@ -6,9 +6,8 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Repository;
 
-@Repository
+
 public class HeaderRepository {
 
 	private SimpleJdbcInsert insert;

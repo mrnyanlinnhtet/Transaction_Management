@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+     <!-- AOP configuration referencing by transaction advice -->
+     <aop:config proxy-target-class="true">
+		<aop:pointcut expression="execution(* com.ultron.demo..*Service.save(..))" id="serviceMethod"/>
+		<aop:advisor advice-ref="saveMethodAdvice"
+			id="saveMethodAdvisor" pointcut-ref="serviceMethod" />
+     </aop:config>
+
+     <!-- Configuration for data source-->
+	<bean id="dataConfig" class="com.zaxxer.hikari.HikariConfig"
+	p:jdbcUrl="jdbc:mysql://localhost:3306/propagation"
+	p:username="root"
+	p:password="admin">
+	</bean>
+	
+	<!-- Data Source -->
+	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource">
+		<constructor-arg ref="dataConfig"></constructor-arg>
+	</bean>
+	
+	<!-- Header Repository -->
+	<bean id="headerRepo"
+		class="com.ultron.demo.repo.HeaderRepository">
+	<constructor-arg ref="dataSource"></constructor-arg>
+	</bean>
+	
+	
+	<!-- Detail Repository -->
+	<bean id="detailRepo"
+		class="com.ultron.demo.repo.DetailRepository">
+	<constructor-arg ref="dataSource"></constructor-arg>
+	</bean>
+	
+	<!-- Propagation Service -->
+	<bean id="propagationService"
+		class="com.ultron.demo.service.PropagationService"
+		p:headerRepository-ref="headerRepo"
+		p:detailRepository-ref="detailRepo">
+	</bean>
+	
+	
+	<!-- Transaction Manager -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	<constructor-arg ref="dataSource"></constructor-arg>
+	</bean>
+	
+	<!-- Transaction Advice -->
+	<tx:advice id="saveMethodAdvice"
+		transaction-manager="transactionManager">
+	<tx:attributes>
+		<tx:method name="*" propagation="REQUIRED" />
+		<tx:method name="find*" read-only="true" propagation="SUPPORTS" />
+	</tx:attributes>
+	</tx:advice>
+
+</beans>

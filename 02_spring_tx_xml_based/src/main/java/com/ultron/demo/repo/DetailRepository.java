@@ -7,11 +7,10 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-@Repository
+
 public class DetailRepository {
 
 	private SimpleJdbcInsert insert;
