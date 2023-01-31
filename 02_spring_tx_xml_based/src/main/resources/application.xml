@@ -10,11 +10,32 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
+
+    <!-- Transaction Advice for Save Method in Service -->
+	<tx:advice id="saveMethodAdvice"
+		transaction-manager="transactionManager">
+	<tx:attributes>
+		<tx:method name="*" propagation="REQUIRED" />
+		<tx:method name="find*" read-only="true" propagation="SUPPORTS" />
+	</tx:attributes>
+	</tx:advice>
+	
+	<!-- Transaction Advice for create Method in Repository -->
+	<tx:advice id="createMethodAdivce" transaction-manager="transactionManager">
+	<tx:attributes>
+	 <tx:method name="create" propagation="REQUIRED"/>
+	</tx:attributes>
+	</tx:advice>
+
      <!-- AOP configuration referencing by transaction advice -->
      <aop:config proxy-target-class="true">
+      <!-- for service method -->
 		<aop:pointcut expression="execution(* com.ultron.demo..*Service.save(..))" id="serviceMethod"/>
+		<aop:pointcut expression="execution(* com.ultron.demo..*Repository.create(..))" id="repoMethod"/>
+		
 		<aop:advisor advice-ref="saveMethodAdvice"
 			id="saveMethodAdvisor" pointcut-ref="serviceMethod" />
+         <aop:advisor advice-ref="createMethodAdivce" pointcut-ref="repoMethod" id="repoMethodAdvice"/>
      </aop:config>
 
      <!-- Configuration for data source-->
@@ -56,13 +77,4 @@
 	<constructor-arg ref="dataSource"></constructor-arg>
 	</bean>
 	
-	<!-- Transaction Advice -->
-	<tx:advice id="saveMethodAdvice"
-		transaction-manager="transactionManager">
-	<tx:attributes>
-		<tx:method name="*" propagation="REQUIRED" />
-		<tx:method name="find*" read-only="true" propagation="SUPPORTS" />
-	</tx:attributes>
-	</tx:advice>
-
 </beans>

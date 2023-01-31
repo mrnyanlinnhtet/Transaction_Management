@@ -7,8 +7,9 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
 
-
+@Repository
 public class DetailRepository {
 
 	private SimpleJdbcInsert insert;
@@ -20,6 +21,7 @@ public class DetailRepository {
 		insert.setColumnNames(List.of("name","header_id"));
 	}
 
+	
 	public List<Integer> create(int headerId, String... names) {
 		List<Integer> list = new ArrayList<>();
 

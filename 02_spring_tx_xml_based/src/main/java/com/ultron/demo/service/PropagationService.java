@@ -1,8 +1,5 @@
 package com.ultron.demo.service;
 
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.ultron.demo.dto.PropagationResult;
 import com.ultron.demo.repo.DetailRepository;
 import com.ultron.demo.repo.HeaderRepository;
@@ -20,7 +17,7 @@ public class PropagationService {
 		this.detailRepository = detailRepository;
 	}
 
-	@Transactional(propagation = Propagation.REQUIRED)
+	
 	public PropagationResult save(int status, String header, String details) {
 		// Create header
 		var headerId = headerRepository.create(header);
